@@ -1,5 +1,5 @@
 import os
-# os.system("cls")  # limpiar consola Windows
+# os.system("cls")
 
 # ==========================================================
 # CONFIGURACIÓN DE CARPETAS PRINCIPALES
@@ -16,46 +16,27 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # LIBRERÍAS
 # ==========================================================
 
-# Librería para abrir explorador de archivos
 import tkinter as tk
 from tkinter import filedialog
-
-# Librerías para copiar archivos y generar hash
 import shutil
 import hashlib
-
-# Librería para manejar cámara y procesamiento de imagen
 import cv2
-
-# 🔥 Librería biométrica
+import pytesseract
+import re
 from deepface import DeepFace
-
-# Librerías para leer y escribir PDFs
-from pypdf import PdfReader, PdfWriter, Transformation
-
-# Librería para generar contenido dentro del PDF
-from reportlab.pdfgen import canvas
-
-# Librería para obtener fecha y hora actual
 from datetime import datetime
 
-# Librerías para formato y diseño del PDF
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-
-# Servicio para enviar documentos por correo
-from services.email_service import enviar_documento
+# RUTA TESSERACT (WINDOWS)
+pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
 
 # ==========================================================
-# VALIDACIÓN BIOMÉTRICA (INTEGRADA EN EL CÓDIGO MADRE)
+# VALIDACIÓN BIOMÉTRICA
 # ==========================================================
 
 def validar_identidad(ruta_imagen_documento, ruta_foto):
-    """
-    Compara la imagen del documento con la selfie usando DeepFace.
-    Si la distancia es menor o igual al threshold → identidad validada.
-    """
+
+    print("Entrando a validación biométrica...")
 
     try:
         resultado = DeepFace.verify(
@@ -67,52 +48,53 @@ def validar_identidad(ruta_imagen_documento, ruta_foto):
             enforce_detection=True
         )
 
-        distancia = resultado["distance"]
-        print("Distancia facial:", distancia)
+        print("Verified:", resultado.get("verified"))
+        print("Distance:", resultado.get("distance"))
 
-        # 🔐 Threshold empresarial (ajústalo según tus pruebas)
-        THRESHOLD = 0.90
+        distancia = resultado["distance"]
+        THRESHOLD = 0.65
+        print("Threshold:", THRESHOLD)
 
         if distancia <= THRESHOLD:
-            print("✅ Identidad validada")
+            print("✅ VALIDACIÓN FACIAL: APROBADA")
             return True
         else:
-            print("❌ Identidad NO coincide")
+            print("VALIDACIÓN FACIAL: RECHAZADA")
             return False
 
     except Exception as e:
-        print("Error en validación biométrica:", e)
+        print("ERROR en validación biométrica:", e)
         return False
 
 
 # ==========================================================
-# SELECCIÓN DE PDF
+# EXTRAER NÚMERO DESDE IMAGEN (OCR)
 # ==========================================================
 
-def seleccionar_pdf_desde_explorador():
-    """
-    Abre explorador y permite seleccionar un PDF.
-    """
+def extraer_numero_desde_imagen(ruta_imagen):
 
-    root = tk.Tk()
-    root.withdraw()
+    imagen = cv2.imread(ruta_imagen)
 
-    ruta_archivo = filedialog.askopenfilename(
-        title="Seleccione un archivo PDF",
-        filetypes=[("Archivos PDF", "*.pdf")]
-    )
+    if imagen is None:
+        return None
 
-    return ruta_archivo if ruta_archivo else None
+    gris = cv2.cvtColor(imagen, cv2.COLOR_BGR2GRAY)
+    texto = pytesseract.image_to_string(gris)
+
+    numeros = re.findall(r"\d[\d\.]{6,20}\d", texto)
+
+    if not numeros:
+        return None
+
+    return max(numeros, key=len)
+
 
 
 # ==========================================================
-# GENERACIÓN DE HASH PARA EVITAR DUPLICADOS
+# HASH
 # ==========================================================
 
 def generar_hash_archivo(ruta_archivo):
-    """
-    Genera hash SHA256 del archivo.
-    """
 
     hash_sha256 = hashlib.sha256()
 
@@ -124,27 +106,20 @@ def generar_hash_archivo(ruta_archivo):
 
 
 def construir_nombre_por_hash(hash_archivo, extension):
-    """
-    Construye nombre usando hash.
-    """
-
     return f"{hash_archivo}{extension}"
 
 
 # ==========================================================
-# FUNCIÓN PARA TOMAR FOTO (SELFIE)
+# TOMAR FOTO
 # ==========================================================
 
 def tomar_foto():
-    """
-    Abre cámara y guarda imagen como foto_capturada.jpg
-    """
 
     camara = cv2.VideoCapture(0)
 
     if not camara.isOpened():
         print("No se pudo abrir la camara")
-        exit()
+        return None
 
     print("Presiona 's' para capturar la foto")
 
@@ -156,7 +131,6 @@ def tomar_foto():
             break
 
         cv2.imshow("Camara", frame)
-
         key = cv2.waitKey(1) & 0xFF
 
         if key == ord('s'):
@@ -174,64 +148,12 @@ def tomar_foto():
     return ruta_imagen
 
 
-# ==========================================================
-# SUBIDA Y VALIDACIÓN DE PDF
-# ==========================================================
-
-def subir_pdf(ruta_origen):
-    """
-    Valida y copia PDF a uploads usando hash.
-    """
-
-    if not os.path.isfile(ruta_origen):
-        raise FileNotFoundError("El archivo no existe")
-
-    if not ruta_origen.lower().endswith(".pdf"):
-        raise ValueError("Solo se permiten archivos PDF")
-
-    hash_archivo = generar_hash_archivo(ruta_origen)
-    extension = os.path.splitext(ruta_origen)[1]
-    nombre_hash = construir_nombre_por_hash(hash_archivo, extension)
-
-    ruta_destino = os.path.join(UPLOAD_DIR, nombre_hash)
-
-    if os.path.exists(ruta_destino):
-        raise ValueError("⚠️ Este documento ya existe")
-
-    shutil.copy2(ruta_origen, ruta_destino)
-
-    return ruta_destino
-
-
-def seleccionar_y_subir_pdf():
-    """
-    Permite seleccionar y subir PDF.
-    """
-
-    while True:
-        ruta = seleccionar_pdf_desde_explorador()
-
-        if not ruta:
-            print("⚠️ Selección cancelada")
-            return None
-
-        try:
-            destino = subir_pdf(ruta)
-            print("✅ PDF subido correctamente")
-            return destino
-
-        except ValueError as e:
-            print("❌", e)
-
 
 # ==========================================================
 # DATOS DEL FIRMANTE
 # ==========================================================
 
 def ingresar_datos_firmante():
-    """
-    Solicita datos por consola.
-    """
 
     try:
         nombre = input("Ingrese su nombre: ")
@@ -247,78 +169,22 @@ def ingresar_datos_firmante():
 
 
 def obtener_tiempo():
-    """
-    Retorna fecha actual.
-    """
-
     return datetime.now().strftime("%Y-%m-%d %H:%M")
-
-
-# ==========================================================
-# CREACIÓN DEL PDF DE FIRMA
-# ==========================================================
-
-def crear_pdf_texto(ruta, nombre, cargo, fecha, edad, documento, ruta_imagen):
-    """
-    Genera hoja de firma electrónica.
-    """
-
-    c = canvas.Canvas(ruta, pagesize=A4)
-    width, height = A4
-
-    c.setFont("Helvetica-Bold", 26)
-    c.drawString(80, height - 80, "Firmas Electrónicas")
-
-    # Línea decorativa
-    c.setFillColor(colors.blue)
-    c.rect(50, height - 120, 10, 80, fill=1)
-    c.setFillColor(colors.black)
-
-    c.setFont("Helvetica", 12)
-    c.drawString(80, height - 150, "Firmado electrónicamente por:")
-
-    c.setFont("Helvetica-Bold", 14)
-    c.drawString(80, height - 170, nombre)
-
-    c.setFont("Helvetica", 11)
-    c.drawString(80, height - 200, f"Documento: {documento}")
-    c.drawString(80, height - 220, f"Fecha: {fecha}")
-
-    # Agregar foto capturada al PDF
-    if ruta_imagen:
-        c.drawImage(
-            ruta_imagen,
-            80,
-            520,
-            width=120,
-            height=90
-        )
-
-    c.save()
 
 
 # ==========================================================
 # ===================== FLUJO PRINCIPAL =====================
 # ==========================================================
 
-print("Suba su Documento PDF a firmar")
-
-ruta_doc_uploads = seleccionar_y_subir_pdf()
 
 nombre, documento, edad, cargo = ingresar_datos_firmante()
 fecha = obtener_tiempo()
 
-# 📷 Tomar foto (SELFIE)
 ruta_foto = tomar_foto()
 
 if not ruta_foto:
     print("Proceso cancelado")
     exit()
-
-
-# ==========================================================
-# VALIDACIÓN BIOMÉTRICA INTEGRADA
-# ==========================================================
 
 print("Seleccione la imagen del documento para validar identidad")
 
@@ -334,61 +200,32 @@ if not ruta_imagen_documento:
     print("No se seleccionó imagen del documento")
     exit()
 
-# Aquí se ejecuta la validación biométrica
-if not validar_identidad(ruta_imagen_documento, ruta_foto):
-    print("Validación fallida. No se firma.")
+# ==========================================================
+# VALIDACIÓN NÚMERO DOCUMENTO (OCR)
+# ==========================================================
+
+numero_detectado = extraer_numero_desde_imagen(ruta_imagen_documento)
+
+if not numero_detectado:
+    print(" No se pudo extraer número del documento.")
     exit()
 
-print("✅ Validación exitosa. Continuando firma...")
+numero_detectado_limpio = numero_detectado.replace(".", "").replace(" ", "")
 
+if str(documento) != numero_detectado_limpio:
+    print("❌El número del documento NO coincide.")
+    exit()
 
-# ==========================================================
-# GENERAR PDF TEMPORAL
-# ==========================================================
-
-ruta_temp = os.path.join(UPLOAD_DIR, "temporal2.pdf")
-crear_pdf_texto(ruta_temp, nombre, cargo, fecha, edad, documento, ruta_foto)
-
+print("Número de documento validado correctamente.")
 
 # ==========================================================
-# UNIR PDF ORIGINAL + HOJA DE FIRMA
+# VALIDACIÓN BIOMÉTRICA
 # ==========================================================
 
-lector_pdf = PdfReader(ruta_doc_uploads)
-lector_datos_firmante = PdfReader(ruta_temp)
+if not validar_identidad(ruta_imagen_documento, ruta_foto):
+    print("Validación facial fallida. No se firma.")
+    exit()
 
-escritor_pdf = PdfWriter()
+print(" Validación facial exitosa. Continuando...")
 
-# Copiar páginas originales
-for pagina in lector_pdf.pages:
-    escritor_pdf.add_page(pagina)
-
-# Agregar hoja de firma
-escritor_pdf.add_page(lector_datos_firmante.pages[0])
-
-nombre_salida = os.path.join(DOCS_DIR, "pdf_firmado.pdf")
-
-with open(nombre_salida, "wb") as salida:
-    escritor_pdf.write(salida)
-
-print("PDF Firmado Exitosamente")
-
-
-# ==========================================================
-# ENVÍO POR CORREO
-# ==========================================================
-
-try:
-    correo_destino = input("Ingrese el correo al cual enviar el documento firmado: ")
-
-    enviar_documento(
-        correo_destino,
-        nombre_salida,
-        ruta_foto
-    )
-
-except Exception as e:
-    print("Error al enviar el correo:", e)
-
-
-print("Proceso Finalizado")
+print(" Proceso Finalizado")

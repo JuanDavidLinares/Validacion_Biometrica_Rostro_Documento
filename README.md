@@ -276,3 +276,91 @@ Se compara con threshold
 Si pasa → Se permite firmar
 
 Si falla → Se bloquea el proceso
+
+# 📄 OCR + Validación de Documento
+
+Sistema en Python que utiliza **OCR (Tesseract + OpenCV)** para extraer el número de un documento desde una imagen y compararlo con el número ingresado por el usuario.
+
+---
+
+## 🚀 Funcionalidades
+
+✅ Selección de imagen mediante explorador de archivos  
+✅ Procesamiento de imagen con OpenCV  
+✅ Extracción de texto con Tesseract OCR  
+✅ Búsqueda automática de números de documento  
+✅ Limpieza de formato (elimina puntos)  
+✅ Comparación entre número extraído y número ingresado  
+✅ Validación automática del documento  
+
+---
+
+## 🛠 Tecnologías Utilizadas
+
+- 🐍 Python
+- 👁 OpenCV
+- 🧠 Tesseract OCR
+- 🔍 Regex (Expresiones regulares)
+- 🖥 Tkinter (Selector de archivos)
+
+---
+
+## 📦 Requisitos
+
+### 🔥 Instalar dependencias
+
+```bash
+pip install opencv-python pytesseract
+🔥 Instalar Tesseract OCR (OBLIGATORIO)
+
+Descargar e instalar desde:
+
+👉 https://github.com/UB-Mannheim/tesseract/wiki
+
+Luego verificar que esta ruta exista:
+
+C:\Program Files\Tesseract-OCR\tesseract.exe
+
+Si está en otra ruta, modificar esta línea en el código:
+
+pytesseract.pytesseract.tesseract_cmd = r"TU_RUTA_AQUI\tesseract.exe"
+▶️ Cómo Ejecutar
+
+Ejecutar el script con:
+
+python nombre_archivo.py
+Flujo del programa:
+
+Se abre una ventana para seleccionar la imagen del documento.
+
+El sistema extrae automáticamente los números del documento.
+
+Se muestra el número detectado (con y sin puntos).
+
+El usuario ingresa manualmente su número de documento.
+
+El sistema compara ambos valores.
+
+Se imprime si el documento es válido o no.
+
+🔎 Cómo Funciona el OCR
+
+El sistema:
+
+Convierte la imagen a escala de grises.
+
+Aplica reconocimiento de texto con Tesseract.
+
+Usa una expresión regular para detectar números largos con puntos.
+
+Limpia el formato eliminando puntos.
+
+Compara con el número ingresado por el usuario.
+
+📌 Expresión Regular Utilizada
+r"\d[\d\.]{6,20}\d"
+
+Busca números largos con formato tipo:
+
+1.234.567.890
+1023456789
