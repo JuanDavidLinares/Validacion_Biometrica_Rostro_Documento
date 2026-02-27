@@ -29,7 +29,7 @@ from datetime import datetime
 # RUTA TESSERACT (WINDOWS)
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 # url para la conexion a la base de datos
-data_base_url="postgresql://juandavid:Comware2026%2B*@database-comware-automation.c114azuuwdxt.us-east-1.rds.amazonaws.com:5432/postgres"
+data_base_url=" "
 #Traer funcion de la persistencia de datos
 from  persistencia_de_datos import insertar_registro
 # ==========================================================
