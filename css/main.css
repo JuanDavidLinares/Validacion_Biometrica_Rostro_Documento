@@ -1,0 +1,223 @@
+/*
+
+   SISTEMA DE VALIDACIÓN DE IDENTIDAD
+   main.css - Estilos globales
+
+
+/*
+   VARIABLES GLOBALES
+ */
+
+:root {
+  --primary: #1a56db;
+  --primary-dark: #1e429f;
+  --success: #0e9f6e;
+  --danger: #f05252;
+  --warning: #c27803;
+  --neutral-50: #f9fafb;
+  --neutral-100: #f3f4f6;
+  --neutral-200: #e5e7eb;
+  --neutral-400: #9ca3af;
+  --neutral-600: #4b5563;
+  --neutral-900: #111827;
+
+  --radius: 12px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.08);
+  --transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+}
+
+/*
+   RESET BASE
+ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--neutral-50);
+  color: var(--neutral-900);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/*
+   CONTAINERS
+ */
+
+.container {
+  width: 95%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem 0;
+}
+
+/* 
+   HEADER
+ */
+
+.app-header {
+  background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+  color: white;
+  padding: 2rem 0;
+  box-shadow: var(--shadow);
+}
+
+.app-header h1 {
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.app-header .subtitle {
+  margin-top: 0.5rem;
+  opacity: 0.9;
+  font-size: 0.95rem;
+  text-align:center;
+}
+
+/* 
+   TIPOGRAFÍA
+*/
+
+h2 {
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* 
+   CARDS BASE
+ */
+
+.card {
+  background: white;
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  margin-bottom: 2rem;
+  transition: var(--transition);
+}
+
+/* 
+   FORMULARIOS
+*/
+
+.form-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  color: var(--neutral-600);
+}
+
+input {
+  padding: 0.75rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--neutral-200);
+  font-size: 0.95rem;
+  transition: var(--transition);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(26,86,219,0.15);
+}
+
+/* 
+   BOTONES BASE
+ */
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+button {
+  border: none;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 0.75rem 1.2rem;
+  border-radius: var(--radius);
+  transition: var(--transition);
+  font-size: 0.9rem;
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn-secondary {
+  background: var(--neutral-100);
+  color: var(--neutral-900);
+}
+
+.btn-secondary:hover {
+  background: var(--neutral-200);
+}
+
+/* 
+   STEP CONTENIDO VISIVILIDAD
+*/
+
+.step-content {
+  display: none;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: var(--transition);
+}
+
+.step-content.active {
+  display: block;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 
+   RESPONSIVE
+*/
+
+@media (max-width: 768px) {
+
+  .app-header h1 {
+    font-size: 1.4rem;
+  }
+
+  .card {
+    padding: 1.2rem;
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  button {
+    width: 100%;
+  }
+
+}

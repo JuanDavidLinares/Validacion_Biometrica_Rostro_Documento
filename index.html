@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Validación de Identidad</title>
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/componentes.css">
+    <link rel="stylesheet" href="css/animaciones.css">
+</head>
+
+<body>
+
+    <!-- ============================= -->
+    <!-- HEADER -->
+    <!-- ============================= -->
+    <img src="comware_img.png" alt ="https://www.comware.com.co/" width="304" height="95" >
+    <header class="app-header">
+        <div class="container">
+            <h1 style ="text-align:center;" >Sistema de Validación de Identidad</h1>
+            <p class="subtitle">Verificación biométrica segura</p>
+           
+        </div>
+    </header>
+
+    <!-- ============================= -->
+    <!-- STEPPER -->
+    <!-- ============================= -->
+    <section class="stepper-section">
+        <div class="container">
+            <div class="stepper">
+                <div class="step active" data-step="1">Datos</div>
+                <div class="step" data-step="2">Selfie</div>
+                <div class="step" data-step="3">Documento</div>
+                <div class="step" data-step="4">Validar</div>
+                <div class="step" data-step="5">Resultado</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================= -->
+    <!-- CONTENIDO PRINCIPAL -->
+    <!-- ============================= -->
+    <main class="container">
+
+        <!-- PASO 1 -->
+        <section class="card step-content active" id="step-1">
+
+            <h2><i data-lucide="user"></i> Datos del solicitante</h2>
+
+            <form id="user-form">
+
+                <div class="form-group">
+                    <label>Nombre completo</label>
+                    <input type="text" id="fullName" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo Documento</label>
+                    <select id="documentType" name="userDocumentType">
+                    <option value="CC"> CC  </option>
+                    <option value="TI"> TI</option>
+                    <option value="CE"> CE  </option>
+                    <option value="PPT">PPT  </option>
+                </select>
+
+                </div>
+
+                
+                <div class="form-group">
+                    <label>Número de documento</label>
+                    <input type="number" id="documentNumber" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Correo electrónico</label>
+                    <input type="email" id="email" placeholder="Correoejemplo@gmail.com " required />
+                </div>
+
+        
+                 <div class="form-group">
+                    <label>edad</label>
+                    <input type="number" id="age" min="14" max="120" required />
+                </div>
+
+                <div class="form-group">
+                    <label>Cargo</label>
+                    <input type="text" id="fullName" required />
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn-primary" id="to-step-2">
+                        Continuar →
+                    </button>
+                </div>
+
+            </form>
+        </section>
+
+       
+
+    <script>
+        lucide.createIcons();
+    </script>
+
+</body>
+</html>

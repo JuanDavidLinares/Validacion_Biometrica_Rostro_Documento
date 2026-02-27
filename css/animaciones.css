@@ -1,0 +1,48 @@
+
+
+/* =============================
+   TRANSICIÓN ENTRE PASOS
+*/
+
+.step-content {
+  animation: fadeSlideIn 0.4s ease forwards;
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 
+   FADE GENERAL
+ */
+
+.fade-in {
+  animation: fadeIn 0.5s ease forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 
+   BOTONES MICROINTERACCIONES
+*/
+
+button:active {
+  transform: scale(0.97);
+}
+
+.btn-primary:focus,
+.btn-secondary:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(26,86,219,0.25);
+}
+

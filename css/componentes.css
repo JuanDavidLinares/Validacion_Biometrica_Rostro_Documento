@@ -1,0 +1,58 @@
+/* =========================================================
+   COMPONENTES UI - Sistema Biométrico
+========================================================= */
+
+/* =============================
+   STEPPER
+============================= */
+
+.stepper-section {
+  background: white;
+  box-shadow: var(--shadow);
+}
+
+.stepper {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  margin: 1rem 0;
+}
+
+.stepper::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 5%;
+  width: 90%;
+  height: 4px;
+  background: var(--neutral-200);
+  z-index: 0;
+}
+
+.step {
+  position: relative;
+  background: var(--neutral-200);
+  color: var(--neutral-600);
+  padding: 0.6rem 1rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  z-index: 1;
+  transition: var(--transition);
+}
+
+.step.active {
+  background: var(--primary);
+  color: white;
+}
+
+.step.completed {
+  background: var(--success);
+  color: white;
+}
+
+.step.error {
+  background: var(--danger);
+  color: white;
+}
+
