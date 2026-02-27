@@ -28,8 +28,10 @@ from datetime import datetime
 
 # RUTA TESSERACT (WINDOWS)
 pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-
-
+# url para la conexion a la base de datos
+data_base_url="postgresql://juandavid:Comware2026%2B*@database-comware-automation.c114azuuwdxt.us-east-1.rds.amazonaws.com:5432/postgres"
+#Traer funcion de la persistencia de datos
+from  persistencia_de_datos import insertar_registro
 # ==========================================================
 # VALIDACIÓN BIOMÉTRICA
 # ==========================================================
@@ -157,7 +159,9 @@ def ingresar_datos_firmante():
 
     try:
         nombre = input("Ingrese su nombre: ")
+        tipo_documento= input("Ingrese su Tipo de documento (CC,TI...): ")
         documento = int(input("Ingrese su documento: "))
+        correo= input("Ingrese su Correo : ")
         edad = int(input("Ingrese su edad: "))
         cargo = input("Ingrese su cargo: ")
 
@@ -165,7 +169,7 @@ def ingresar_datos_firmante():
         print("Error en los datos:", e)
         return ingresar_datos_firmante()
 
-    return nombre, documento, edad, cargo
+    return nombre,tipo_documento, documento, correo,edad, cargo
 
 
 def obtener_tiempo():
@@ -177,7 +181,7 @@ def obtener_tiempo():
 # ==========================================================
 
 
-nombre, documento, edad, cargo = ingresar_datos_firmante()
+nombre,tipo_documento, documento,correo, edad, cargo = ingresar_datos_firmante()
 fecha = obtener_tiempo()
 
 ruta_foto = tomar_foto()
@@ -227,5 +231,6 @@ if not validar_identidad(ruta_imagen_documento, ruta_foto):
     exit()
 
 print(" Validación facial exitosa. Continuando...")
-
+#Si es exitosa la validadcion guarda el registro en la basde de datos
+insertar_registro(data_base_url,nombre,tipo_documento,documento,correo)
 print(" Proceso Finalizado")
