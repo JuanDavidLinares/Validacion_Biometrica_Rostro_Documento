@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -23,12 +23,12 @@
     <!-- ============================= -->
     <!-- HEADER -->
     <!-- ============================= -->
-    <img src="comware_img.png" alt ="https://www.comware.com.co/" width="304" height="95" >
+    <img src="comware_img.png" alt="https://www.comware.com.co/" width="304" height="95">
     <header class="app-header">
         <div class="container">
-            <h1 style ="text-align:center;" >Sistema de Validación de Identidad</h1>
+            <h1 style="text-align:center;">Sistema de Validación de Identidad</h1>
             <p class="subtitle">Verificación biométrica segura</p>
-           
+
         </div>
     </header>
 
@@ -67,15 +67,15 @@
                 <div class="form-group">
                     <label>Tipo Documento</label>
                     <select id="documentType" name="userDocumentType">
-                    <option value="CC"> CC  </option>
-                    <option value="TI"> TI</option>
-                    <option value="CE"> CE  </option>
-                    <option value="PPT">PPT  </option>
-                </select>
+                        <option value="CC"> CC </option>
+                        <option value="TI"> TI</option>
+                        <option value="CE"> CE </option>
+                        <option value="PPT">PPT </option>
+                    </select>
 
                 </div>
 
-                
+
                 <div class="form-group">
                     <label>Número de documento</label>
                     <input type="number" id="documentNumber" required />
@@ -86,8 +86,8 @@
                     <input type="email" id="email" placeholder="Correoejemplo@gmail.com " required />
                 </div>
 
-        
-                 <div class="form-group">
+
+                <div class="form-group">
                     <label>edad</label>
                     <input type="number" id="age" min="14" max="120" required />
                 </div>
@@ -105,12 +105,159 @@
 
             </form>
         </section>
+        <section class="card step-content" id="step-2">
 
-       
+            <h2><i data-lucide="camera"></i> Captura de Selfie</h2>
 
-    <script>
-        lucide.createIcons();
-    </script>
+            <div class="camera-container">
+                <video id="video" autoplay playsinline></video>
+                <canvas id="canvas" style="display:none;"></canvas>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn-secondary">← Atrás</button>
+                <button type="button" class="btn-primary" id="capture-btn">
+                    Tomar foto
+                </button>
+            </div>
+
+        </section>
+
+        <section class="card step-content" id="step-3">
+
+            <h2><i data-lucide="credit-card"></i> Documento de identidad</h2>
+
+            <div class="form-group">
+                <label>Sube la imagen del documento</label>
+                <input type="file" accept="image/*" />
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn-secondary">← Atrás</button>
+                <button type="button" class="btn-primary">Continuar →</button>
+            </div>
+
+        </section>
+
+        <section class="card step-content" id="step-4">
+
+            <h2><i data-lucide="shield-check"></i> Confirmar validación</h2>
+
+            <p>Verifica que la información ingresada sea correcta antes de continuar.</p>
+
+            <div class="actions">
+                <button type="button" class="btn-secondary">← Atrás</button>
+                <button type="button" class="btn-primary">Validar identidad</button>
+            </div>
+
+        </section>
+
+        <section class="card step-content" id="step-5">
+
+            <h2><i data-lucide="check-circle"></i> Resultado</h2>
+
+            <div class="form-group">
+                <p><strong>Estado:</strong> Validación exitosa</p>
+                <p><strong>Distancia biométrica:</strong> 0.32</p>
+            </div>
+
+            <div class="actions">
+                <button type="button" class="btn-primary">Finalizar</button>
+            </div>
+
+        </section>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+
+                lucide.createIcons();
+
+                const steps = document.querySelectorAll(".step");
+                const stepContents = document.querySelectorAll(".step-content");
+
+                let stream = null;
+
+                function goToStep(stepNumber) {
+
+                    steps.forEach(step => step.classList.remove("active"));
+                    stepContents.forEach(content => content.classList.remove("active"));
+
+                    document.querySelector(`.step[data-step="${stepNumber}"]`)
+                        .classList.add("active");
+
+                    document.getElementById(`step-${stepNumber}`)
+                        .classList.add("active");
+
+                    // 👉 Si entramos al paso 2, abrir cámara
+                    if (stepNumber === 2) {
+                        startCamera();
+                    }
+                }
+
+                async function startCamera() {
+                    const video = document.getElementById("video");
+
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                        video.srcObject = stream;
+                    } catch (err) {
+                        console.error("Error accediendo a la cámara:", err);
+                    }
+                }
+
+                function stopCamera() {
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                        stream = null;
+                    }
+                }
+
+                function capturePhoto() {
+                    const video = document.getElementById("video");
+                    const canvas = document.getElementById("canvas");
+
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+
+                    const context = canvas.getContext("2d");
+                    context.drawImage(video, 0, 0);
+
+                    stopCamera();
+
+                    alert("Foto capturada 📸");
+                }
+
+                // Botones siguiente
+                document.querySelectorAll(".btn-primary").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        const current = document.querySelector(".step.active");
+                        const nextStep = parseInt(current.dataset.step) + 1;
+                        if (nextStep <= 5) {
+                            goToStep(nextStep);
+                        }
+                    });
+                });
+
+                // Botones atrás
+                document.querySelectorAll(".btn-secondary").forEach(btn => {
+                    btn.addEventListener("click", () => {
+                        const current = document.querySelector(".step.active");
+                        const prevStep = parseInt(current.dataset.step) - 1;
+                        if (prevStep >= 1) {
+                            stopCamera(); // 👉 detener cámara al salir
+                            goToStep(prevStep);
+                        }
+                    });
+                });
+
+                // Botón capturar
+                document.getElementById("capture-btn")
+                    .addEventListener("click", capturePhoto);
+
+            });
+        </script>
 
 </body>
+
 </html>
